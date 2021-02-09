@@ -7,11 +7,9 @@ on:
 
 jobs:
   deploy-gh-pages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Deploy gh-pages
     steps:
-      - name: Pull down this repo
-        uses: actions/checkout@v2
       - name: Set up node
         uses: actions/setup-node@v2
         with:
