@@ -1,0 +1,33 @@
+name: Deploy gh-pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  deploy-gh-pages:
+    runs-on: ubuntu-latest
+    name: Deploy gh-pages
+    steps:
+      - name: Pull down this repo
+        uses: actions/checkout@v2
+      - name: Pull down heimdall-lite
+        run: |
+          git switch -C "gh-pages"
+          curl -s "https://api.github.com/repos/mitre/heimdall2/releases/latest" | jq -r ".zipball_url" | xargs -I{} curl {} -L -o heimdall_zip.zip
+          unzip heimdall_zip.zip
+          rm heimdall_zip.zip
+          mv mitre-heimdall2-*/* .
+          rm -r mitre-heimdall2-*
+      - name: Build heimdall-lite
+        run: |
+          yarn install
+          yarn frontend build
+      - name: Deploy heimdall-lite
+        run: |
+          git config --global user.name "CMS SAF"
+          git config --global user.email "saf@cms.hhs.gov"
+          git add .
+          git commit -s -m "Automated update and deployment of heimdall-lite" || true
+          git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
