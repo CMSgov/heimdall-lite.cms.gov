@@ -20,7 +20,7 @@ jobs:
         run: |
           curl -s "https://api.github.com/repos/mitre/heimdall2/releases/latest" | jq -r ".tarball_url" | xargs -I{} curl {} -L -o heimdall_tar.tar.gz
           tar xvzf heimdall_tar.tar.gz --strip-components 1
-          rm heimdall_zip.zip
+          rm heimdall_tar.tar.gz
       - name: Build heimdall-lite
         run: |
           yarn install --frozen-lockfile
